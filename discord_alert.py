@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 import discord
 
 import config
-from config import discord_token
+from config import discord_token,discord_channel
 
 # print(datetime.now(timezone.utc).strftime("%m/%d/%Y, %H:%M:%S"))
 # exit()
@@ -18,7 +18,7 @@ client = discord.Client()
 
 async def my_background_task(msg):
     await client.wait_until_ready()
-    channel = client.get_channel(config.discord_channel)
+    channel = client.get_channel(discord_channel)
     # PURGE MESSAGED OLDER THAN x DAYS
     x = 2
     async for elem in channel.history():
