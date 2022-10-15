@@ -12,7 +12,7 @@ import config
 
 ROOT_DIR = os.path.abspath(os.curdir)
 date_last_call = {}
-callpersecond = 50
+callperminute = 50
 
 
 def write_data(filename, data):
@@ -56,7 +56,7 @@ def rpc_call(method, params=None, endpoint=None, display_res=1):
     else:
         json_data = []
     # call per second limiter>>
-    timetowait = 60 / callpersecond
+    timetowait = 60 / callperminute
     if date_last_call and org_endpoint in date_last_call:
         while (datetime.now() - date_last_call[org_endpoint]).total_seconds() < timetowait:
             sleep = 0.1
