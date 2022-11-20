@@ -157,7 +157,7 @@ def check_getblockcount_cc_chainz():
                     {'date': now.strftime("%m/%d/%Y, %H:%M:%S"), 'coin': coin, 'cc_height': cc_height,
                      'chainz_height': chainz_height, 'valid': valid})
                 write_data('data.pic', false_list)
-                print(subprocess.call([ROOT_DIR + "/discord_alert.py", str(false_list[-1])]))
+                #print(subprocess.call([ROOT_DIR + "/discord_alert.py", str(false_list[-1])]))
             msg = f"{' ' + coin:<7} | {str(cc_height):<9} | {str(chainz_height):<9} | {valid}"
             print(msg)
         time.sleep(60)
