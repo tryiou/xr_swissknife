@@ -29,22 +29,16 @@ def stop_and_compact(container):
     container.stop(timeout=60 * 10)
     print(f"Executing docker-compose for utxo-plugin-{coin_name}")
 
-    # Start the docker-compose command
     command = ['docker-compose', '--env-file', '.env', 'run', '-e', 'SKIP_COMPACT=false', '--rm',
                f'utxo-plugin-{coin_name}']
-
-    # Run the docker-compose command
     process = subprocess.Popen(command)
     print("Subprocess started")
 
-    # Wait for the container to be created
     print("Waiting for the container to be created...")
-    time.sleep(10)  # Adjust the sleep duration as needed
+    time.sleep(10)
 
-    # Connect to Docker daemon
     client = docker.from_env()
 
-    # Find the newly created container
     print("Searching for the newly created container...")
     new_container = None
     for c in client.containers.list():
@@ -55,11 +49,9 @@ def stop_and_compact(container):
             break
 
     if new_container:
-        # Get logs from the newly created container
         print("Retrieving logs from the newly created container...")
         logs = new_container.logs().decode('utf-8')
 
-        # Monitor the logs until the desired log line appears
         print("Monitoring logs from the newly created container:")
         while "[utxoplugin] History compaction complete" not in logs:
             try:
@@ -71,20 +63,16 @@ def stop_and_compact(container):
             except docker.errors.NotFound:
                 print("Container not found. Exiting monitoring loop.")
                 break
-            time.sleep(1)  # Wait for 10 seconds before retrying
+            time.sleep(1)
 
         print(f"History compaction complete. Terminating {new_container.name}")
         try:
-            # Terminate the subprocess
             new_container.stop(timeout=60 * 10)
-            # process.terminate()
-            # process.wait(timeout=60*10)
             print(f"{new_container.name} terminated successfully.")
         except Exception as e:
             print(f"Error terminating {new_container.name}: {e}")
 
         time.sleep(10)
-        # Start the original container again
         print(f"Starting container {container.name}")
         container.start()
     else:
@@ -95,16 +83,12 @@ def main():
     flush_count_threshold = 60000
     containers = get_utxo_plugin_containers()
     for container in containers:
-        # try:
         logs = container.logs().decode('utf-8')
         flush_count = extract_latest_flush_number(logs)
         print_container_info(container, flush_count)
-        # if container.name.split('-')[-2] == "BLOCK":
         if flush_count and flush_count > flush_count_threshold:
             print(f"Stopping container {container.name} as flush count {flush_count} exceeds threshold")
             stop_and_compact(container)
-        # except Exception as e:
-        #     print(f"Error processing container {container.name}: {str(e)}")
 
 
 if __name__ == "__main__":
