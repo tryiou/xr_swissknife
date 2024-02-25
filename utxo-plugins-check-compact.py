@@ -69,7 +69,8 @@ def stop_and_compact(container):
                     print("Container no longer exists. Exiting monitoring loop.")
                     break
                 else:
-                    logs = new_container.logs().decode('utf-8')
+                    buff = new_container.logs().decode('utf-8')
+                    logs = buff
             except docker.errors.NotFound:
                 print("Container not found. Exiting monitoring loop.")
                 break
