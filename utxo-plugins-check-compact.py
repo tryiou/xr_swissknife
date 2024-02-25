@@ -80,7 +80,7 @@ def stop_and_compact(container):
         try:
             new_container.stop(timeout=60 * 10)
             new_container.reload()
-            if new_container.status != 'exited':
+            if new_container.status != 'removing':
                 raise RuntimeError(f"Failed to stop container {new_container.name} within the timeout period.")
 
             print(f"{new_container.name} terminated successfully.")
