@@ -71,7 +71,7 @@ def stop_and_compact(container):
                 else:
                     buff = new_container.logs().decode('utf-8')
                     logs = buff
-            except docker.errors.NotFound:
+            except (docker.errors.NotFound, docker.errors.APIError):
                 print("Container not found. Exiting monitoring loop.")
                 break
             time.sleep(1)
