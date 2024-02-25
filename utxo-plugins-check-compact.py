@@ -26,8 +26,18 @@ def print_container_info(container, flush_count):
 
 def stop_and_compact(container):
     coin_name = container.name.split('-')[-2]
-    container.stop(timeout=60 * 10)
-    print(f"Executing docker-compose for utxo-plugin-{coin_name}")
+    container.stop(timeout=60 * 10)  # Stop the container with a timeout of 10 minutes
+
+    # Check if the container is stopped
+    container.reload()
+    if container.status != 'exited':
+        raise RuntimeError(f"Failed to stop container {container.name} within the timeout period.")
+
+    # Container has stopped, continue with further actions
+    print(f"Container {container.name} stopped successfully.")
+
+
+    print(f"Executing docker-compose for utxo-plugin-{coin_name} compaction")
 
     command = ['docker-compose', '--env-file', '.env', 'run', '-e', 'SKIP_COMPACT=false', '--rm',
                f'utxo-plugin-{coin_name}']
@@ -42,7 +52,7 @@ def stop_and_compact(container):
     print("Searching for the newly created container...")
     new_container = None
     for c in client.containers.list():
-        if f"utxo-plugin-{coin_name}" in c.name:
+        if f"utxo-plugin-{coin_name}_run_" in c.name:
             new_container = c
             print("Newly created container found:")
             print(f"Container ID: {new_container.id}, Name: {new_container.name}")
