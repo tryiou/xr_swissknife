@@ -76,13 +76,15 @@ def stop_and_compact(container):
             time.sleep(1)
 
         print(f"History compaction complete. Terminating {new_container.name}")
+        try:
+            new_container.stop(timeout=60 * 10)
+            new_container.reload()
+            if new_container.status != 'exited':
+                raise RuntimeError(f"Failed to stop container {new_container.name} within the timeout period.")
 
-        new_container.stop(timeout=60 * 10)
-        new_container.reload()
-        if new_container.status != 'exited':
-            raise RuntimeError(f"Failed to stop container {new_container.name} within the timeout period.")
-
-        print(f"Container {new_container.name} stopped successfully.")
+            print(f"{new_container.name} terminated successfully.")
+        except Exception as e:
+            print(f"Error terminating {new_container.name}: {e}")
 
         time.sleep(10)
         print(f"Starting container {container.name}")
