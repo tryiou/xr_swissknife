@@ -36,7 +36,6 @@ def stop_and_compact(container):
     # Container has stopped, continue with further actions
     print(f"Container {container.name} stopped successfully.")
 
-
     print(f"Executing docker-compose for utxo-plugin-{coin_name} compaction")
 
     command = ['docker-compose', '--env-file', '.env', 'run', '-e', 'SKIP_COMPACT=false', '--rm',
@@ -52,7 +51,7 @@ def stop_and_compact(container):
     print("Searching for the newly created container...")
     new_container = None
     for c in client.containers.list():
-        if f"utxo-plugin-{coin_name}_run_" in c.name:
+        if f"utxo-plugin-{coin_name}" in c.name and "run" in c.name:
             new_container = c
             print("Newly created container found:")
             print(f"Container ID: {new_container.id}, Name: {new_container.name}")
