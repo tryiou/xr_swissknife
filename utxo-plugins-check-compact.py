@@ -2,7 +2,7 @@ import docker
 import re
 import subprocess
 import time
-
+from datetime import datetime
 
 def extract_latest_flush_number(logs):
     pattern = r'INFO:Database:flush #([\d,]+)'
@@ -106,4 +106,5 @@ def main():
 
 
 if __name__ == "__main__":
+    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     main()
