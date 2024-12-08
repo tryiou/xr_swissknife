@@ -44,18 +44,25 @@ def stop_and_compact(container):
     print("Subprocess started")
 
     print("Waiting for the container to be created...")
-    time.sleep(10)
-
+    # Initialize Docker client
     client = docker.from_env()
-
-    print("Searching for the newly created container...")
+    # Timeout settings
+    timeout = 120  # 2 minutes
+    interval = 5  # Check every 5 seconds
+    elapsed_time = 0
     new_container = None
-    for c in client.containers.list():
-        if f"utxo-plugin-{coin_name}" in c.name and "run" in c.name:
-            new_container = c
-            print("Newly created container found:")
-            print(f"Container ID: {new_container.id}, Name: {new_container.name}")
+    while elapsed_time < timeout:
+        print(f"Checking for the newly created container (Elapsed time: {elapsed_time}s)...")
+        for c in client.containers.list():
+            if f"utxo-plugin-{coin_name}" in c.name and "run" in c.name:
+                new_container = c
+                print("Newly created container found:")
+                print(f"Container ID: {new_container.id}, Name: {new_container.name}")
+                break
+        if new_container:
             break
+        time.sleep(interval)
+        elapsed_time += interval
 
     if new_container:
         print("Retrieving logs from the newly created container...")
